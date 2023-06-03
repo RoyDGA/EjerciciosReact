@@ -1,0 +1,141 @@
+import React from 'react';
+import { useState, useEffect } from 'react';
+
+/////////////////////////////////////SUMAR Y RESTAR CONTADOR///////////////////////////////////
+const ComponenteBoton = () =>{
+  const [contador, setContador] = useState(0);
+  const handleClickAumentar = () =>{
+    setContador(contador + 1);
+  }
+  const handleClickDecrementar = () =>{
+    setContador(contador - 1);
+  }
+
+  return(
+    <>
+      <div className="containerBoton">
+      <p>Aumentar y Decrementar</p>
+        <button type='button' onClick={handleClickAumentar}>Aumentar</button>
+        <p>Contador: {contador}</p>
+        <button type='button' onClick={handleClickDecrementar}>Decrementar</button>
+      </div>
+    </>
+  )
+}
+
+
+/////////////////////////////////////CONVERTIDOR///////////////////////////////////
+const ConverterCelsius = () =>{
+  const [celsius, setCelsius] = useState(0);
+  const handleClickCelsius = (e) =>{
+    var valorInput = e.target.value;
+    setCelsius((valorInput * 9/5)+32)
+    if (valorInput === '') setCelsius(0)
+  }
+  return(
+    <>
+      <div className="containerConverter">
+        <p>Convertidor</p>
+        <input type="number" onChange={handleClickCelsius} placeholder='Celsius'></input>
+        <p>fahrenheit: {celsius}</p>
+      
+      </div>
+    </>
+  )
+}
+/////////////////////////////////////LISTA DE TAREAS///////////////////////////////////
+const ListaDeTareas = () =>{
+  const [inputTarea, setInputTarea] = useState('');
+  const [lista, setLista] = useState([]);
+
+  const handleInput = (e) => {
+    setInputTarea(e.target.value)
+  }
+
+  const valorTareaAñadir = () =>{
+    if(inputTarea){
+      setLista([...lista, inputTarea])
+      setInputTarea('');
+    }
+  }
+  const handleBorrar = (index) =>{
+    const BorrarTarea = lista.filter((tarea, indexTarea)=> indexTarea !==index);
+    setLista(BorrarTarea);
+  }
+
+  return(
+    <div className="containerLista">
+      <p>Lista de tareas</p>
+      <input 
+        type="text" 
+        placeholder='Tarea' 
+        value={inputTarea} 
+        onChange={handleInput}>
+      </input>
+
+      <button
+        type='button' 
+        onClick={valorTareaAñadir}>
+        Añadir
+      </button>
+      <ol>
+      {
+        lista?.map((item, index) =>(
+          <>
+            <li 
+              key={index}>
+              {item}
+
+              <button 
+                key={index}
+                onClick={() => handleBorrar(index)}>
+                borrar
+              </button>
+            </li>
+            
+          </>
+        ))
+      }
+      </ol>
+    </div>
+  )
+}
+
+////////////////////////////////GALERIA///////////////////////////////////
+const Galeria = () => {
+  const [personajes, setPersonajes] = useState([]);
+
+  useEffect(() => {
+    const fetchPersonajes = async () => {
+      try {
+        const res = await fetch(
+          'https://gateway.marvel.com/v1/public/characters?ts=1&apikey=d230199873967dcbe0d4b8cf8d5af604&hash=70ae1e5dd4d9c8518de5ded4f8985c5c'
+        );
+        const data = await res.json();
+        setPersonajes(data.data.results);
+      } catch (error) {
+        console.error('Sin resultado:', error);
+      }
+    };
+
+    fetchPersonajes();
+  }, []);
+
+  return (
+    <>
+      <div className="containerMain">
+        <p>Galeria</p>
+        <div className="image-container">
+          {personajes.map((personaje, index) => (
+            <img
+              key={index}
+              src={`${personaje.thumbnail.path}.${personaje.thumbnail.extension}`}
+              className="imagen"
+            />
+          ))}
+        </div>
+      
+      </div>
+    </>
+  );
+};
